@@ -15,7 +15,8 @@ CREATE TABLE `roles` (
     `salary` DECIMAL NOT NULL, 
     `department_id` INT UNSIGNED NOT NULL, 
     INDEX `dep_index` (`department_id`), 
-    CONSTRAINT `fk_departments` FOREIGN KEY(`department_id`) REFERENCES `departments`(`id`)
+    CONSTRAINT `fk_departments` FOREIGN KEY(`department_id`) REFERENCES `departments`(`id`) ON DELETE CASCADE
+ -- ON DELETE CASCADE -> Delete the row from pareent table and automaticall delete the marching row in the child table
  
 
 ); 
@@ -29,7 +30,8 @@ CREATE TABLE `employees` (
     CONSTRAINT `fk_roles` FOREIGN KEY (`role_id`) REFERENCES `roles`(`id`), 
     `manager_id` INT UNSIGNED, 
     INDEX `manager_index` (`manager_id`), 
-    CONSTRAINT `fk_manager` FOREIGN KEY (`manager_id`) REFERENCES `employees`(`id`) 
+    CONSTRAINT `fk_manager` FOREIGN KEY (`manager_id`) REFERENCES `employees`(`id`) ON DELETE SET NULL 
+    -- ON DELETE SET NULL -> Delete the row from the parent table/department table/ and set the foreign key column in this table null 
 
  
 ); 
