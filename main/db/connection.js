@@ -1,11 +1,13 @@
 const util = require("util");
 const mysql = require("mysql");
+const dotenv = require("dotenv").config();
+//hiding my password for mysql
 
 const connection = mysql.createConnection({
 	host: "localhost",
 	user: "root",
-	password: "firenze098",
-	database: "employees",
+	password: process.env.DB_PASSWORD,
+	database: "employees_db",
 });
 
 connection.connect((err) => {

@@ -6,7 +6,7 @@ const connection = require("./main/db/connection");
 function askForAction() {
 	inquirer
 		.prompt({
-			message: "choose something to do",
+			message: "What would you like to do?",
 			name: "action",
 			type: "list",
 			choices: [
@@ -22,14 +22,33 @@ function askForAction() {
 				case "VIEW_DEPARTMENTS":
 					return;
 
-				case "view roles":
+				case "ADD_DEPARTMENT":
+					return;
+				case "REMOVE_DEPARTMENTS":
 					return;
 
-				case "view employees":
+				case "VIEW_ALL_ROLES":
 					return;
 
 				case "CREATE_ROLE":
 					createRole();
+					return;
+
+				case "VIEW_ALL_EMPLOYEES":
+					return;
+
+				case "ADD_EMPLOYEE":
+					return;
+
+				case "REMOVE_EMPLOYEE":
+					return;
+
+				case "UPDATE_EMPLOYEE":
+					return;
+
+				case "VIEW_ALL_EMPLOYEES_BY_DEPARTMENT":
+					return;
+				case "VIEW_ALL_EMPLOYEES_BY_MANAGER":
 					return;
 
 				default:
