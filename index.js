@@ -1,6 +1,8 @@
 const inquirer = require("inquirer");
 const { createBrotliDecompress } = require("zlib");
 const db = require("./main/db");
+const chalk = require("chalk");
+const cTable = require("console.table");
 const connection = require("./main/db/connection");
 
 function askForAction() {
@@ -11,6 +13,7 @@ function askForAction() {
 			type: "list",
 			choices: [
 				"VIEW_DEPARTMENTS",
+				"VIEW_ALL_EMPLOYEES",
 				"view roles",
 				"view employees",
 				"CREATE_ROLE",
@@ -35,6 +38,7 @@ function askForAction() {
 					return;
 
 				case "VIEW_ALL_EMPLOYEES":
+					viewALLEmployees();
 					return;
 
 				case "ADD_EMPLOYEE":
@@ -56,7 +60,31 @@ function askForAction() {
 			}
 		});
 }
+function viewALLEmployees() {
+	const query = `SELECT employees.id,
+	employees.first_name AS "First Name",
+	employees.last_name "Last Name",
+	roles.title AS "Title",
+	departments.name AS "Department",
+	CONCAT('$', FORMAT(roles.salary,2)) AS "Salary",
+	CONCAT(manager.first_name, " ", manager.last_name) AS manager
+		FROM employees
+		LEFT JOIN employees manager on manager.id = employees.manager_id
+		INNER JOIN roles ON (roles.id = employees.role_id)
+		INNER JOIN departments ON (departments.id = roles.department_id)
+		ORDER BY employees.id;
+	`;
+	connection.query(query, (err, res) => {
+		if (err) throw err;
+		console.log("\n");
+		console.log(chalk.yellow("All Employees"));
+		console.log("\n");
+		console.table(res);
+		console.log("\n");
 
+		askForAction();
+	});
+}
 function viewDepartment() {
 	db.getDepartments()
 		// only works because of util.promisify

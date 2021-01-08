@@ -12,12 +12,13 @@ CREATE TABLE `departments`(
 CREATE TABLE `roles` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `title` VARCHAR(30) UNIQUE NOT NULL DEFAULT '', 
-    `salary` DECIMAL NOT NULL, 
+    `salary` DECIMAL(8,2) NOT NULL, 
     `department_id` INT UNSIGNED NOT NULL, 
     INDEX `dep_index` (`department_id`), 
     CONSTRAINT `fk_departments` FOREIGN KEY(`department_id`) REFERENCES `departments`(`id`) ON DELETE CASCADE
  -- ON DELETE CASCADE -> Delete the row from pareent table and automaticall delete the marching row in the child table
- 
+
+
 
 ); 
 
