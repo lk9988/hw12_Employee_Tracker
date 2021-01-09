@@ -4,6 +4,8 @@ const db = require("./main/db");
 const chalk = require("chalk");
 const cTable = require("console.table");
 const connection = require("./main/db/connection");
+const Choice = require("inquirer/lib/objects/choice");
+const { getEmployeesbyDepartment } = require("./main/db");
 
 function askForAction() {
 	inquirer
@@ -12,17 +14,30 @@ function askForAction() {
 			name: "action",
 			type: "list",
 			choices: [
-				"VIEW_DEPARTMENTS",
 				"VIEW_ALL_EMPLOYEES",
-				"view roles",
-				"view employees",
+				"VIEW_DEPARTMENTS",
+				"ADD_DEPARTMENT",
+				"REMOVE_DEPARTMENTS",
+				"VIEW_ALL_ROLES",
 				"CREATE_ROLE",
+				"REMOVE_ROLE",
+				"ADD_EMPLOYEE",
+				"REMOVE_EMPLOYEE",
+				"UPDATE_EMPLOYEE",
+				"VIEW_ALL_EMPLOYEES_BY_DEPARTMENT",
+				"VIEW_ALL_EMPLOYEES_BY_MANAGER",
+				"VIEW_TOTAL_UTILIZED_BUDGET_OF_DEPARTMENT",
 				"QUIT",
 			],
 		})
 		.then((res) => {
 			switch (res.action) {
+				case "VIEW_ALL_EMPLOYEES":
+					viewALLEmployees();
+					return;
+
 				case "VIEW_DEPARTMENTS":
+					viewAllDepartments();
 					return;
 
 				case "ADD_DEPARTMENT":
@@ -37,8 +52,7 @@ function askForAction() {
 					createRole();
 					return;
 
-				case "VIEW_ALL_EMPLOYEES":
-					viewALLEmployees();
+				case "REMOVE_ROLE":
 					return;
 
 				case "ADD_EMPLOYEE":
@@ -51,8 +65,12 @@ function askForAction() {
 					return;
 
 				case "VIEW_ALL_EMPLOYEES_BY_DEPARTMENT":
+					viewEmployeeByDepartment();
 					return;
 				case "VIEW_ALL_EMPLOYEES_BY_MANAGER":
+					return;
+
+				case "VIEW_TOTAL_UTILIZED_BUDGET_OF_DEPARTMENT":
 					return;
 
 				default:
@@ -60,22 +78,9 @@ function askForAction() {
 			}
 		});
 }
+
 function viewALLEmployees() {
-	const query = `SELECT employees.id,
-	employees.first_name AS "First Name",
-	employees.last_name "Last Name",
-	roles.title AS "Title",
-	departments.name AS "Department",
-	CONCAT('$', FORMAT(roles.salary,2)) AS "Salary",
-	CONCAT(manager.first_name, " ", manager.last_name) AS manager
-		FROM employees
-		LEFT JOIN employees manager on manager.id = employees.manager_id
-		INNER JOIN roles ON (roles.id = employees.role_id)
-		INNER JOIN departments ON (departments.id = roles.department_id)
-		ORDER BY employees.id;
-	`;
-	connection.query(query, (err, res) => {
-		if (err) throw err;
+	db.getAllEmployees().then((res) => {
 		console.log("\n");
 		console.log(chalk.yellow("All Employees"));
 		console.log("\n");
@@ -85,15 +90,57 @@ function viewALLEmployees() {
 		askForAction();
 	});
 }
-function viewDepartment() {
+function viewAllDepartments() {
 	db.getDepartments()
 		// only works because of util.promisify
 		// also db.index.js file, must return connection.query
 		// otherwise, .then change will not work
-		.then((results) => {
-			console.log(results);
+		.then((res) => {
+			console.log("\n");
+			console.log(chalk.yellow("View All Departments"));
+			console.log("\n");
+			console.table(res);
+			console.log("\n");
 			askForAction();
 		});
+}
+function viewEmployeeByDepartment() {
+	db.getDepartments().then((res) => {
+		// console.log(res, "res");
+		// getting rowdata.. okay
+
+		inquirer
+			.prompt([
+				{
+					name: "deptChoice",
+					type: "list",
+					choices: function () {
+						let deptArray = res.map((choice) => choice.name);
+						return deptArray;
+					},
+					message: "Select a Department to view",
+				},
+			])
+			.then((answer) => {
+				let chosenDept;
+				for (let i = 0; i < res.length; i++) {
+					if (res[i].name === answer.deptChoice) {
+						chosenDept = res[i];
+					}
+				}
+				console.log(chosenDept, "choice");
+				db.getEmployeesbyDepartment(chosenDept).then((res) => {
+					console.log("\n");
+					console.log(
+						chalk.yellow(`All Employees by Department: ${chosenDept.name}`)
+					);
+					console.log("\n");
+					console.table(res);
+					console.log("\n");
+					askForAction();
+				});
+			});
+	});
 }
 
 function createRole() {
