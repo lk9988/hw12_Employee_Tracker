@@ -78,3 +78,16 @@ LEFT JOIN employees manager on manager.id = employees.manager_id
     INNER JOIN roles ON (roles.id = employees.role_id)
     INNER JOIN departments ON (departments.id = roles.department_id)
     ORDER BY "Manager ID" DESC, department; 
+
+
+
+-- budget // rollup for total 
+SELECT 
+departments.name AS "Department", 
+CONCAT('$', FORMAT(SUM(roles.salary),2)) AS "Utilized Budget"
+    FROM employees
+    LEFT JOIN roles 
+    ON employees.id = roles.id
+    LEFT JOIN departments
+    ON departments.id = roles.department_id
+    GROUP BY departments.name WITH ROLLUP; 
