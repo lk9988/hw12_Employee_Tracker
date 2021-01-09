@@ -41,6 +41,7 @@ function askForAction() {
 					return;
 
 				case "ADD_DEPARTMENT":
+					addDepartment();
 					return;
 				case "REMOVE_DEPARTMENTS":
 					return;
@@ -104,6 +105,37 @@ function viewAllDepartments() {
 			askForAction();
 		});
 }
+function addDepartment() {
+	db.getDepartments().then((res) => {
+		console.log("\n");
+		console.table(chalk.yellow("List of All current Departments"), res);
+
+		inquirer
+			.prompt([
+				{
+					name: "newDept",
+					type: "input",
+					message: "Please Enter the name of new department to ADD",
+				},
+			])
+			.then((answer) => {
+				connection
+					.query(`INSERT INTO departments(name) VALUES (?); `, answer.newDept)
+					.then(
+						db.getDepartments().then((res) => {
+							console.log("\n");
+							console.log(" new department added ");
+							console.table(
+								chalk.yellow("List of All current Departments"),
+								res
+							);
+						})
+					);
+
+				askForAction();
+			});
+	});
+}
 function viewEmployeeByDepartment() {
 	db.getDepartments().then((res) => {
 		// console.log(res, "res");
@@ -129,7 +161,7 @@ function viewEmployeeByDepartment() {
 					}
 				}
 				console.log(chosenDept, "choice");
-				db.getEmployeesbyDepartment(chosenDept).then((res) => {
+				db.getEmployeesbyDepartment(chosenDept.id).then((res) => {
 					console.log("\n");
 					console.log(
 						chalk.yellow(`All Employees by Department: ${chosenDept.name}`)
