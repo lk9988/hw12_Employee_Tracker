@@ -44,6 +44,7 @@ function askForAction() {
 					addDepartment();
 					return;
 				case "REMOVE_DEPARTMENTS":
+					removeDepartment();
 					return;
 
 				case "VIEW_ALL_ROLES":
@@ -115,16 +116,16 @@ function addDepartment() {
 				{
 					name: "newDept",
 					type: "input",
-					message: "Please Enter the name of new department to ADD",
+					message: "Enter the name of new department to ADD",
 				},
 			])
 			.then((answer) => {
 				connection
-					.query(`INSERT INTO departments(name) VALUES (?); `, answer.newDept)
+					.query(`INSERT INTO departments(name) VALUES ?; `, answer.newDept)
 					.then(
 						db.getDepartments().then((res) => {
 							console.log("\n");
-							console.log(" new department added ");
+							console.log(chalk.green("Department Successfully is Removed"));
 							console.table(
 								chalk.yellow("List of All current Departments"),
 								res
@@ -136,6 +137,40 @@ function addDepartment() {
 			});
 	});
 }
+
+function removeDepartment() {
+	db.getDepartments().then((res) => {
+		inquirer
+			.prompt([
+				{
+					name: "removeDept",
+					type: "list",
+					choices: function () {
+						let choiceArray = res.map((choice) => choice.name);
+						return choiceArray;
+					},
+					message: "Select the department you wish to remove",
+				},
+			])
+			.then((answer) => {
+				connection
+					.query(`DELETE FROM departments WHERE ? `, {
+						name: answer.removeDept,
+					})
+					.then(
+						db.getDepartments().then((res) => {
+							console.log("\n");
+							console.log(chalk.red("Department Successfully is Removed"));
+							console.table(
+								chalk.yellow("List of All current Departments"),
+								res
+							);
+						})
+					);
+			});
+	});
+}
+
 function viewEmployeeByDepartment() {
 	db.getDepartments().then((res) => {
 		// console.log(res, "res");
