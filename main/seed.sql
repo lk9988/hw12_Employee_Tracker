@@ -45,7 +45,7 @@ CONCAT(manager.first_name, " ", manager.last_name) AS manager
     LEFT JOIN employees manager on manager.id = employees.manager_id
     INNER JOIN roles ON (roles.id = employees.role_id)
     INNER JOIN departments ON (departments.id = roles.department_id)
-    ORDER BY employees.id;
+    ORDER BY employees.id, Department;
 
 
 
@@ -54,4 +54,27 @@ SELECT e.first_name AS "First Name", e.last_name AS "Last Name", r.title AS "Tit
 INNER JOIN roles r ON r.id = e.role_id INNER JOIN departments d ON d.id = r.department_id WHERE d.name = 'HR';
 
 
+-- view by department 
+SELECT e.first_name AS "First Name", 
+e.last_name AS "Last Name", 
+r.title AS "Title",CONCAT('$', FORMAT(r.salary,2)) AS "Salary", 
+d.name AS "Department" 
+FROM employees e
+INNER JOIN roles AS r ON r.id = e.role_id 
+INNER JOIN departments AS d ON d.id = r.department_id 
+WHERE d.name = 'HR'
 
+
+-- view by manager 
+SELECT
+employees.manager_id AS "Manager ID",
+CONCAT(manager.first_name, " ", manager.last_name) AS "Manager",
+departments.name AS "Department", 
+employees.id AS "ID", 
+CONCAT(employees.first_name," ", employees.last_name) AS "Employee", 
+roles.title AS "Role" 
+FROM employees 
+LEFT JOIN employees manager on manager.id = employees.manager_id
+    INNER JOIN roles ON (roles.id = employees.role_id)
+    INNER JOIN departments ON (departments.id = roles.department_id)
+    ORDER BY "Manager ID" DESC, department; 
