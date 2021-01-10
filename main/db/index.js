@@ -1,3 +1,4 @@
+const inquirer = require("inquirer");
 const connection = require("./connection");
 
 module.exports = {
@@ -25,7 +26,8 @@ module.exports = {
 			`
 		SELECT e.first_name AS "First Name", 
 		e.last_name AS "Last Name", 
-		r.title AS "Title",CONCAT('$', FORMAT(r.salary,2)) AS "Salary", 
+		r.title AS "Title",
+		CONCAT('$', FORMAT(r.salary,2)) AS "Salary", 
 		d.name AS "Department" 
 		FROM employees e
 		INNER JOIN roles AS r ON r.id = e.role_id 
@@ -65,12 +67,36 @@ module.exports = {
 	getAllRoles() {
 		return connection.query(
 			`SELECT departments.name AS "Department", 
-			roles.title 
+			roles.title AS "Title"
 			FROM roles 
 			LEFT JOIN departments 
 			ON departments.id = roles.department_id
 			ORDER BY "Department"; `
 		);
+	},
+
+	insertRole(answer, res) {
+		return connection.query(
+			`INSERT INTO roles( title, salary, department_id)
+						VALUES
+						( "${answer.newTitle}" , "${answer.newSalary}", "${res.department_id}"); 
+						`
+		);
+	},
+	getRoleByDept(res) {
+		return connection.query(
+			`SELECT  departments.name AS "Department",
+			roles.title,
+			roles.id
+			FROM roles 
+			LEFT JOIN departments 
+			ON departments.id = roles.department_id
+			WHERE departments.id = ?;`,
+			[res.department_id]
+		);
+	},
+	deleteRole(res) {
+		return connection.query(`DELETE FROM roles WHERE id=?`, [res.removeRole]);
 	},
 };
 

@@ -19,7 +19,7 @@ function askForAction() {
 				"ADD_DEPARTMENT",
 				"REMOVE_DEPARTMENTS",
 				"VIEW_ALL_ROLES",
-				"CREATE_ROLE",
+				"ADD_ROLE",
 				"REMOVE_ROLE",
 				"ADD_EMPLOYEE",
 				"REMOVE_EMPLOYEE",
@@ -48,13 +48,16 @@ function askForAction() {
 					return;
 
 				case "VIEW_ALL_ROLES":
+					viewALLRoles();
 					return;
 
-				case "CREATE_ROLE":
-					createRole();
+				case "ADD_ROLE":
+					// createRole();
+					addRole();
 					return;
 
 				case "REMOVE_ROLE":
+					removeRole();
 					return;
 
 				case "ADD_EMPLOYEE":
@@ -125,7 +128,7 @@ function addDepartment() {
 					.then(
 						db.getDepartments().then((res) => {
 							console.log("\n");
-							console.log(chalk.green("Department Successfully is Removed"));
+							console.log(chalk.green("Department Successfully is Added"));
 							console.table(
 								chalk.yellow("List of All current Departments"),
 								res
@@ -160,7 +163,7 @@ function removeDepartment() {
 					.then(
 						db.getDepartments().then((res) => {
 							console.log("\n");
-							console.log(chalk.red("Department Successfully is Removed"));
+							console.log(chalk.green("Department Successfully is Removed"));
 							console.table(
 								chalk.yellow("List of All current Departments"),
 								res
@@ -210,7 +213,18 @@ function viewEmployeeByDepartment() {
 	});
 }
 
-function createRole() {
+function viewALLRoles() {
+	db.getAllRoles().then((res) => {
+		console.log("\n");
+		console.log(chalk.yellow("View All Roles By department"));
+		console.log("\n");
+		console.table(res);
+		console.log("\n");
+		askForAction();
+	});
+}
+
+function addRole() {
 	db.getDepartments().then((departments) => {
 		console.log(departments);
 		// this returns whole date from departments table
@@ -218,17 +232,14 @@ function createRole() {
 
 		const departmentChoices = departments.map((department) => ({
 			value: department.id,
-
 			name: department.name,
 		}));
-		// map returns new array
-
 		inquirer
 			.prompt([
 				{
-					message: "what department is this role for?",
-					type: "list",
 					name: "department_id",
+					type: "list",
+					message: "Which department is this role for?",
 					choices: departmentChoices,
 				},
 			])
@@ -236,7 +247,80 @@ function createRole() {
 				console.log(res);
 				// this will return
 				// {department_id: 2}
+				inquirer
+					.prompt([
+						{
+							name: "newTitle",
+							type: "input",
+							message: "Enter the new title",
+						},
+						{
+							name: "newSalary",
+							type: "input",
+							message: "Enter the salary for the new title",
+							validate: (val) =>
+								/[0-9]/gi.test(val) || "Please enter valid number",
+						},
+					])
+
+					.then((answer) => {
+						console.log(answer, res, "answer");
+						db.insertRole(answer, res).then((res) => {
+							console.log("\n");
+							console.log(chalk.green("New Title Successfully is Added"));
+							console.log("\n");
+							askForAction();
+						});
+					});
 			});
 	});
 }
+
+function removeRole() {
+	db.getDepartments().then((departments) => {
+		const departmentChoices = departments.map((department) => ({
+			value: department.id,
+			name: department.name,
+		}));
+
+		inquirer
+			.prompt([
+				{
+					name: "department_id",
+					type: "list",
+					message: "Which department is this role for?",
+					choices: departmentChoices,
+				},
+			])
+			.then((res) => {
+				console.log(res);
+				db.getRoleByDept(res).then((roles) => {
+					const roleChoices = roles.map((role) => ({
+						value: role.id,
+						name: role.title,
+					}));
+					console.log(roleChoices, "roleChoice");
+					inquirer
+						.prompt([
+							{
+								name: "removeRole",
+								type: "list",
+								message: "Select the title you wish to remove",
+								choices: roleChoices,
+							},
+						])
+						.then((res) => {
+							console.log(res);
+							db.deleteRole(res).then(() => {
+								console.log("\n");
+								console.log(chalk.green("New Title Successfully is Removed"));
+								console.log("\n");
+								askForAction();
+							});
+						});
+				});
+			});
+	});
+}
+
 askForAction();
