@@ -5,7 +5,7 @@ const chalk = require("chalk");
 const cTable = require("console.table");
 const connection = require("./main/db/connection");
 const Choice = require("inquirer/lib/objects/choice");
-const { getEmployeesbyDepartment } = require("./main/db");
+const { getEmployeesbyDepartment, getBudget } = require("./main/db");
 
 function askForAction() {
 	inquirer
@@ -76,6 +76,7 @@ function askForAction() {
 					return;
 
 				case "VIEW_TOTAL_UTILIZED_BUDGET_OF_DEPARTMENT":
+					viewBudgetByDept();
 					return;
 
 				default:
@@ -320,6 +321,17 @@ function removeRole() {
 						});
 				});
 			});
+	});
+}
+function viewBudgetByDept() {
+	db.getBudget().then((res) => {
+		console.log("\n");
+		console.log(chalk.yellow("View Total Utilized Budget by Department"));
+
+		console.log("\n");
+		console.table(res);
+		console.log("\n");
+		askForAction();
 	});
 }
 
