@@ -26,6 +26,7 @@ function askForAction() {
 				"UPDATE_EMPLOYEE",
 				"VIEW_ALL_EMPLOYEES_BY_DEPARTMENT",
 				"VIEW_ALL_EMPLOYEES_BY_MANAGER",
+				"VIEW_EMPLOYEES_BY_MANAGER",
 				"VIEW_TOTAL_UTILIZED_BUDGET_OF_DEPARTMENT",
 				"QUIT",
 			],
@@ -52,7 +53,6 @@ function askForAction() {
 					return;
 
 				case "ADD_ROLE":
-					// createRole();
 					addRole();
 					return;
 
@@ -73,6 +73,10 @@ function askForAction() {
 					viewEmployeeByDepartment();
 					return;
 				case "VIEW_ALL_EMPLOYEES_BY_MANAGER":
+					viewAllbyManager();
+					return;
+
+				case "VIEW_EMPLOYEES_BY_MANAGER":
 					return;
 
 				case "VIEW_TOTAL_UTILIZED_BUDGET_OF_DEPARTMENT":
@@ -327,7 +331,17 @@ function viewBudgetByDept() {
 	db.getBudget().then((res) => {
 		console.log("\n");
 		console.log(chalk.yellow("View Total Utilized Budget by Department"));
+		console.log("\n");
+		console.table(res);
+		console.log("\n");
+		askForAction();
+	});
+}
 
+function viewAllbyManager() {
+	db.getAllEmployeesbyManager().then((res) => {
+		console.log("\n");
+		console.log(chalk.yellow("View All Employees by Manager"));
 		console.log("\n");
 		console.table(res);
 		console.log("\n");
