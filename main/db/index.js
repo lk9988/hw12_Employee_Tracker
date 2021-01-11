@@ -36,7 +36,7 @@ module.exports = {
 			[chosenDept.id]
 		);
 	},
-	getEmployeesbyManager() {
+	getAllEmployeesbyManager() {
 		return connection.query(`
 		SELECT
 		employees.manager_id AS "Manager ID",
@@ -51,6 +51,39 @@ module.exports = {
 		INNER JOIN departments ON (departments.id = roles.department_id)
 		ORDER BY "Manager ID" DESC, department; `);
 	},
+	getManagers() {
+		return connection.query(`
+		SELECT
+		DISTINCT employees.manager_id,
+	   	CONCAT(manager.first_name, " ", manager.last_name) AS "Manager",
+	   	departments.name AS "Department"
+	    FROM employees 
+	    LEFT JOIN employees manager on manager.id = employees.manager_id
+		INNER JOIN roles ON (roles.id = employees.role_id)
+		INNER JOIN departments ON (departments.id = roles.department_id)
+	    WHERE manager.id IS NOT NULL;
+
+		`);
+	},
+	getEmployeessbyManager(answer) {
+		return connection.query(
+			`
+		SELECT
+		employees.manager_id,
+		CONCAT(manager.first_name, " ", manager.last_name) AS "Manager",
+		departments.name AS "Department", 
+		employees.id AS "ID", 
+		CONCAT(employees.first_name," ", employees.last_name) AS "Employee", 
+		roles.title AS "Role" 
+		FROM employees 
+		LEFT JOIN employees manager on manager.id = employees.manager_id
+		INNER JOIN roles ON (roles.id = employees.role_id)
+    	INNER JOIN departments ON (departments.id = roles.department_id)
+		WHERE manager.id = ?;`,
+			[answer.manager_id]
+		);
+	},
+
 	getBudget() {
 		return connection.query(`
 		SELECT 

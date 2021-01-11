@@ -77,6 +77,7 @@ function askForAction() {
 					return;
 
 				case "VIEW_EMPLOYEES_BY_MANAGER":
+					viewbyManager();
 					return;
 
 				case "VIEW_TOTAL_UTILIZED_BUDGET_OF_DEPARTMENT":
@@ -346,6 +347,38 @@ function viewAllbyManager() {
 		console.table(res);
 		console.log("\n");
 		askForAction();
+	});
+}
+function viewbyManager() {
+	db.getManagers().then((managers) => {
+		console.log(managers);
+		const managerChoices = managers.map((manager) => ({
+			value: manager.manager_id,
+			name: manager.Manager,
+		}));
+		inquirer
+			.prompt([
+				{
+					name: "manager_id",
+					type: "list",
+					message: "Select a Manager",
+					choices: managerChoices,
+				},
+			])
+			.then((answer) => {
+				console.log(answer);
+				//return { manager_id: 1 }
+
+				db.getEmployeessbyManager(answer).then((res) => {
+					// console.log(answer, "manager_id");
+					console.log("\n");
+					console.log(chalk.yellow("View Employees by Manager"));
+					console.log("\n");
+					console.table(res);
+					console.log("\n");
+					askForAction();
+				});
+			});
 	});
 }
 
