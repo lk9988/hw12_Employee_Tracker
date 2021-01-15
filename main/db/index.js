@@ -114,7 +114,8 @@ module.exports = {
 	getRoleAndEmployees() {
 		return connection.query(`
 		SELECT * FROM roles;
-		SELECT CONCAT(employees.first_name," ",employees.last_name) AS full_name
+		SELECT CONCAT(employees.first_name," ",employees.last_name) AS full_name, 
+		employees.id
 		FROM employees;
 		`);
 	},
@@ -136,6 +137,16 @@ module.exports = {
 		ORDER BY employees.id;
 		
 		`);
+	},
+
+	insertEmployee(answer) {
+		return connection.query(
+			`
+		INSERT INTO employees (first_name, last_name, role_id, manager_id)
+		VALUES (?, ?, ?, ?)
+		`,
+			[answer.newFirst, answer.newLast, answer.roleSelect, answer.managerSelect]
+		);
 	},
 
 	insertRole(answer, res) {

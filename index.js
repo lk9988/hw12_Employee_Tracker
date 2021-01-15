@@ -275,7 +275,7 @@ function addRole() {
 						console.log(answer, res, "answer");
 						db.insertRole(answer, res).then((res) => {
 							console.log("\n");
-							console.log(chalk.green("New Title Successfully is Added"));
+							console.log(chalk.green("New Title Successfully Added"));
 							console.log("\n");
 							askForAction();
 						});
@@ -321,7 +321,7 @@ function removeRole() {
 							console.log(res);
 							db.deleteRole(res).then(() => {
 								console.log("\n");
-								console.log(chalk.green("New Title Successfully is Removed"));
+								console.log(chalk.green("New Title Successfully Removed"));
 								console.log("\n");
 								askForAction();
 							});
@@ -505,10 +505,11 @@ function addEmployee() {
 		])
 		.then((answer) => {
 			if (!answer.checkRole) {
-				console.log(chalk.red("Please add role first ! "));
+				console.log(chalk.red("Please add role first! "));
 				addRole();
 			} else {
 				db.getRoleAndEmployees().then((results) => {
+					console.log(results, "re1");
 					inquirer
 						.prompt([
 							{
@@ -526,7 +527,13 @@ function addEmployee() {
 								type: "list",
 								message: "Select role of new employee",
 								choices: function () {
-									let choiceArray = results[0].map((choice) => choice.title);
+									// let choiceArray = results[0].map((choice) => choice.title);
+
+									let choiceArray = results[0].map((choice) => ({
+										value: choice.id,
+										name: choice.title,
+									}));
+
 									return choiceArray;
 								},
 							},
@@ -535,16 +542,39 @@ function addEmployee() {
 								type: "list",
 								message: "Select Manager for this employee",
 								choices: function () {
-									let choiceArray = results[1].map(
-										(choice) => choice.full_name
-									);
+									// let choiceArray = results[1].map(
+									// 	(choice) => choice.full_name
+									// );
+
+									let choiceArray = results[1].map((choice) => ({
+										value: choice.id,
+										name: choice.full_name,
+									}));
+
 									return choiceArray;
 								},
 							},
 						])
-						.then((res) => {
-							console.log(res, "resres");
+
+						.then((answer) => {
+							console.log(answer, "resres");
+							db.insertEmployee(answer).then((res) => {
+								console.log("\n");
+								console.log(chalk.green("New Enployee Successfully Added"));
+								console.log("\n");
+								askForAction();
+							});
 						});
+
+					// .then((answer) => {
+					// 	console.log(answer, res, "answer");
+					// 	db.insertRole(answer, res).then((res) => {
+					// 		console.log("\n");
+					// 		console.log(chalk.green("New Title Successfully is Added"));
+					// 		console.log("\n");
+					// 		askForAction();
+					// 	});
+					// });
 				});
 			}
 		});
