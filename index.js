@@ -66,9 +66,11 @@ function askForAction() {
 					return;
 
 				case "REMOVE_EMPLOYEE":
+					removeEmployee();
 					return;
 
 				case "UPDATE_EMPLOYEE":
+					updateEmployee();
 					return;
 
 				case "VIEW_ALL_EMPLOYEES_BY_DEPARTMENT":
@@ -565,19 +567,39 @@ function addEmployee() {
 								askForAction();
 							});
 						});
-
-					// .then((answer) => {
-					// 	console.log(answer, res, "answer");
-					// 	db.insertRole(answer, res).then((res) => {
-					// 		console.log("\n");
-					// 		console.log(chalk.green("New Title Successfully is Added"));
-					// 		console.log("\n");
-					// 		askForAction();
-					// 	});
-					// });
 				});
 			}
 		});
 }
+function removeEmployee() {
+	db.getEmployeesList().then((res) => {
+		console.log(res, "res");
+		inquirer
+			.prompt([
+				{
+					name: "selectEmp",
+					type: "list",
+					message: "Select an employee to Remove",
+					choices: function () {
+						let choiceArray = res.map((choice) => ({
+							value: choice.id,
+							name: choice.full_name,
+						}));
+						return choiceArray;
+					},
+				},
+			])
+			.then((answer) => {
+				db.deleteEmployee(answer).then((res) => {
+					console.log("\n");
+					console.log(chalk.green("New Enployee Successfully Removed"));
+					console.log("\n");
+					askForAction();
+				});
+			});
+	});
+}
+
+function updateEmployee() {}
 
 askForAction();

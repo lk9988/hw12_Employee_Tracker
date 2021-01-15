@@ -148,6 +148,13 @@ module.exports = {
 			[answer.newFirst, answer.newLast, answer.roleSelect, answer.managerSelect]
 		);
 	},
+	getEmployeesList() {
+		return connection.query(
+			`SELECT employees.id, 
+			CONCAT(employees.first_name," ", employees.last_name) as full_name
+			FROM employees`
+		);
+	},
 
 	insertRole(answer, res) {
 		return connection.query(
@@ -168,6 +175,11 @@ module.exports = {
 			WHERE departments.id = ?;`,
 			[res.department_id]
 		);
+	},
+	deleteEmployee(res) {
+		return connection.query(`DELETE FROM employees WHERE id = ?`, [
+			res.selectEmp,
+		]);
 	},
 	deleteRole(res) {
 		return connection.query(`DELETE FROM roles WHERE id=?`, [res.removeRole]);
