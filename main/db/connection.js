@@ -8,6 +8,7 @@ const connection = mysql.createConnection({
 	user: "root",
 	password: process.env.DB_PASSWORD,
 	database: "employees_db",
+	multipleStatements: true,
 });
 
 connection.connect((err) => {

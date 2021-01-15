@@ -6,6 +6,7 @@ const cTable = require("console.table");
 const connection = require("./main/db/connection");
 const Choice = require("inquirer/lib/objects/choice");
 const { getEmployeesbyDepartment, getBudget } = require("./main/db");
+const { KeyObject } = require("crypto");
 
 function askForAction() {
 	inquirer
@@ -61,6 +62,7 @@ function askForAction() {
 					return;
 
 				case "ADD_EMPLOYEE":
+					addEmployee();
 					return;
 
 				case "REMOVE_EMPLOYEE":
@@ -380,6 +382,172 @@ function viewbyManager() {
 				});
 			});
 	});
+}
+
+// function addEmployee() {
+// 	inquirer
+// 		.prompt([
+// 			{
+// 				name: "checkRole",
+// 				type: "confirm",
+// 				message: "Did you add the role for this employee?",
+// 			},
+// 		])
+// 		.then((answer) => {
+// 			if (!answer.checkRole) {
+// 				console.log(chalk.red("Please add role first ! "));
+// 				addRole();
+// 			} else {
+// 				db.getRoleAndNames().then((results) => {
+// 					console.log(results, "results");
+// 					const roleChoices = results.map((result) => ({
+// 						value: result.role_id,
+// 						name: result.title,
+// 					}));
+// 					console.log(roleChoices, "roleChoices");
+
+// 					inquirer
+// 						.prompt([
+// 							{
+// 								name: "newFirst",
+// 								type: "input",
+// 								message: "Enter first name of new employee.",
+// 							},
+// 							{
+// 								name: "newLast",
+// 								type: "input",
+// 								message: "Enter last name of new employee.",
+// 							},
+// 							{
+// 								name: "roleSelect",
+// 								type: "list",
+// 								message: "Select role of new employee",
+// 								choices: roleChoices,
+
+// 								// function () {
+// 								// 	let choiceArray = results.map((choice) => choice.title);
+// 								// 	return choiceArray;
+// 								// },
+// 							},
+// 							// {
+// 							// 	name: "managerSelect",
+// 							// 	type: "list",
+// 							// 	message: "Select Manager for this employee",
+// 							// 	choices: function () {
+// 							// 		// let choiceArray = results.filter((choice) => {
+// 							// 		// 	return choice.id != null;
+// 							// 		// });
+// 							// 		///// this giving me undefinds............
+
+// 							// 		// let choiceArray = results.filter(Boolean);
+// 							// 		let filteredArray = results.filter(Boolean);
+
+// 							// 		return choiceArray;
+// 							// 		///// this giving me undefinds............
+// 							// 	},
+// 							// },
+// 						])
+// 						.then((res) => {
+// 							console.log(res, "resres");
+// 							const roleResult = res;
+// 							// this res { newFirst: 'what', newLast: 'name', roleSelect: 3 } resres
+// 							// but does not get past to....
+// 							// this is messy...
+// 							// need to find a way ... need to have last Q in same block..
+// 							db.getName().then((results) => {
+// 								console.log(results, "line 403");
+// 								inquirer
+// 									.prompt([
+// 										{
+// 											name: "managerSelect",
+// 											type: "list",
+// 											message: "Select Manager for this employee",
+// 											choices: function () {
+// 												let choiceArray = results.map(
+// 													(choice) => choice.full_name
+// 												);
+// 												choiceArray.push("No Manager");
+// 												return choiceArray;
+// 											},
+// 										},
+// 									])
+// 									.then((managerResult, data) => {
+// 										console.log(results, managerResult, "res4444");
+// 										console.log(roleResult, "resmymym");
+
+// 										db.insertEmployee(results, roleResult).then((res) => {
+// 											console.log("\n");
+// 											console.log(
+// 												chalk.green("New Employee Successfully is Added")
+// 											);
+// 											console.log("\n");
+// 											askForAction();
+// 										});
+
+// 										// this results -> list of names
+// 										// res => managerSelect :name
+// 									});
+// 							});
+// 						});
+// 				});
+// 			}
+// 		});
+// }
+
+function addEmployee() {
+	inquirer
+		.prompt([
+			{
+				name: "checkRole",
+				type: "confirm",
+				message: "Did you add the role for this employee?",
+			},
+		])
+		.then((answer) => {
+			if (!answer.checkRole) {
+				console.log(chalk.red("Please add role first ! "));
+				addRole();
+			} else {
+				db.getRoleAndEmployees().then((results) => {
+					inquirer
+						.prompt([
+							{
+								name: "newFirst",
+								type: "input",
+								message: "Enter first name of new employee.",
+							},
+							{
+								name: "newLast",
+								type: "input",
+								message: "Enter last name of new employee.",
+							},
+							{
+								name: "roleSelect",
+								type: "list",
+								message: "Select role of new employee",
+								choices: function () {
+									let choiceArray = results[0].map((choice) => choice.title);
+									return choiceArray;
+								},
+							},
+							{
+								name: "managerSelect",
+								type: "list",
+								message: "Select Manager for this employee",
+								choices: function () {
+									let choiceArray = results[1].map(
+										(choice) => choice.full_name
+									);
+									return choiceArray;
+								},
+							},
+						])
+						.then((res) => {
+							console.log(res, "resres");
+						});
+				});
+			}
+		});
 }
 
 askForAction();

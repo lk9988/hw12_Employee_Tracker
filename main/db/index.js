@@ -107,6 +107,36 @@ module.exports = {
 			ORDER BY "Department"; `
 		);
 	},
+	getRoleTable() {
+		return connection.query(`SELECT  * FROM roles;`);
+	},
+
+	getRoleAndEmployees() {
+		return connection.query(`
+		SELECT * FROM roles;
+		SELECT CONCAT(employees.first_name," ",employees.last_name) AS full_name
+		FROM employees;
+		`);
+	},
+
+	getName() {
+		return connection.query(`SELECT CONCAT(e.first_name," ",e.last_name) AS full_name 
+		FROM employees e`);
+	},
+	getRoleAndNames() {
+		return connection.query(`
+
+		SELECT employees.id,
+ 		CONCAT(employees.first_name," ", employees.last_name) as full_name,
+		roles.title,
+		roles.id AS role_id
+		FROM employees
+		LEFT JOIN employees manager on manager.id = employees.manager_id
+		RIGHT JOIN roles ON (roles.id = employees.role_id)
+		ORDER BY employees.id;
+		
+		`);
+	},
 
 	insertRole(answer, res) {
 		return connection.query(
