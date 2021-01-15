@@ -184,6 +184,16 @@ module.exports = {
 	deleteRole(res) {
 		return connection.query(`DELETE FROM roles WHERE id=?`, [res.removeRole]);
 	},
+	updateRole(res) {
+		return connection.query(
+			`
+			UPDATE employees 
+            SET role_id = ?
+            WHERE id = ?;
+			`,
+			[res.updateRoleList, res.empList]
+		);
+	},
 };
 
 // module.exports = {

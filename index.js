@@ -22,6 +22,7 @@ function askForAction() {
 				"VIEW_ALL_ROLES",
 				"ADD_ROLE",
 				"REMOVE_ROLE",
+				"UPDATE_ROLE",
 				"ADD_EMPLOYEE",
 				"REMOVE_EMPLOYEE",
 				"UPDATE_EMPLOYEE",
@@ -61,16 +62,16 @@ function askForAction() {
 					removeRole();
 					return;
 
+				case "UPDATE_ROLE":
+					updateRole();
+					return;
+
 				case "ADD_EMPLOYEE":
 					addEmployee();
 					return;
 
 				case "REMOVE_EMPLOYEE":
 					removeEmployee();
-					return;
-
-				case "UPDATE_EMPLOYEE":
-					updateEmployee();
 					return;
 
 				case "VIEW_ALL_EMPLOYEES_BY_DEPARTMENT":
@@ -332,6 +333,47 @@ function removeRole() {
 			});
 	});
 }
+
+function updateRole() {
+	db.getRoleAndEmployees().then((results) => {
+		console.log(results, "results");
+		inquirer
+			.prompt([
+				{
+					name: "empList",
+					type: "list",
+					choices: function () {
+						let choiceArray = results[1].map((choice) => ({
+							value: choice.id,
+							name: choice.full_name,
+						}));
+						return choiceArray;
+					},
+				},
+				{
+					name: "updateRoleList",
+					type: "list",
+					choices: function () {
+						let choiceArray = results[0].map((choice) => ({
+							value: choice.id,
+							name: choice.title,
+						}));
+						return choiceArray;
+					},
+				},
+			])
+			.then((res) => {
+				console.log(res, "reseresrerserse");
+				db.updateRole(res).then(() => {
+					console.log("\n");
+					console.log(chalk.green("Role Successfully updated"));
+					console.log("\n");
+					askForAction();
+				});
+			});
+	});
+}
+
 function viewBudgetByDept() {
 	db.getBudget().then((res) => {
 		console.log("\n");
@@ -599,7 +641,5 @@ function removeEmployee() {
 			});
 	});
 }
-
-function updateEmployee() {}
 
 askForAction();
