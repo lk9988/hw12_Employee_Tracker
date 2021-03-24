@@ -88,10 +88,11 @@ DB_PASSWORD=(your Password for MYSQL)
 
 ## Demonstration <a name="demo"></a>
 
-![app demo](/assets/screen.png)
-![app demo](/assets/screen2.png)
+![app demo](Assets/screen.png)
+![app demo](Assets/screen2.png)
+
 To watch full demo :
-[demo link] (https://drive.google.com/file/d/1yea8XBjw6Lzi0AaIiDmbtn8sjgzMaiCX/view?usp=sharing)
+[demo link](https://drive.google.com/file/d/1yea8XBjw6Lzi0AaIiDmbtn8sjgzMaiCX/view?usp=sharing)
 
 ## Tech Used <a name="tech"></a>
 
