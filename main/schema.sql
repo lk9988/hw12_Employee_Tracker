@@ -28,7 +28,7 @@ CREATE TABLE `employees` (
     `last_name` VARCHAR (30) NOT NULL DEFAULT '',
     `role_id` INT UNSIGNED NOT NULL, 
     INDEX `role_index` (`role_id`),
-    CONSTRAINT `fk_roles` FOREIGN KEY (`role_id`) REFERENCES `roles`(`id`), 
+    CONSTRAINT `fk_roles` FOREIGN KEY (`role_id`) REFERENCES `roles`(`id`) ON DELETE CASCADE, 
     `manager_id` INT UNSIGNED, 
     INDEX `manager_index` (`manager_id`), 
     CONSTRAINT `fk_manager` FOREIGN KEY (`manager_id`) REFERENCES `employees`(`id`) ON DELETE SET NULL 

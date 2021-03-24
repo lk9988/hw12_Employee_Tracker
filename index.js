@@ -25,7 +25,7 @@ function askForAction() {
 				"UPDATE_ROLE",
 				"ADD_EMPLOYEE",
 				"REMOVE_EMPLOYEE",
-				"UPDATE_EMPLOYEE",
+
 				"VIEW_ALL_EMPLOYEES_BY_DEPARTMENT",
 				"VIEW_ALL_EMPLOYEES_BY_MANAGER",
 				"VIEW_EMPLOYEES_BY_MANAGER",
@@ -135,7 +135,7 @@ function addDepartment() {
 			])
 			.then((answer) => {
 				connection
-					.query(`INSERT INTO departments(name) VALUES ?; `, answer.newDept)
+					.query(`INSERT INTO departments(name) VALUES(?)`, answer.newDept)
 					.then(
 						db.getDepartments().then((res) => {
 							console.log("\n");
@@ -144,10 +144,9 @@ function addDepartment() {
 								chalk.yellow("List of All current Departments"),
 								res
 							);
+							askForAction();
 						})
 					);
-
-				askForAction();
 			});
 	});
 }
@@ -179,6 +178,7 @@ function removeDepartment() {
 								chalk.yellow("List of All current Departments"),
 								res
 							);
+							askForAction();
 						})
 					);
 			});
@@ -209,7 +209,7 @@ function viewEmployeeByDepartment() {
 						chosenDept = res[i];
 					}
 				}
-				console.log(chosenDept, "choice");
+				// console.log(chosenDept, "choice");
 				db.getEmployeesbyDepartment(chosenDept.id).then((res) => {
 					console.log("\n");
 					console.log(
@@ -237,7 +237,7 @@ function viewALLRoles() {
 
 function addRole() {
 	db.getDepartments().then((departments) => {
-		console.log(departments);
+		// console.log(departments);
 		// this returns whole date from departments table
 		// {id:1 , name: departmentname}
 
@@ -255,7 +255,7 @@ function addRole() {
 				},
 			])
 			.then((res) => {
-				console.log(res);
+				// console.log(res);
 				// this will return
 				// {department_id: 2}
 				inquirer
@@ -275,7 +275,7 @@ function addRole() {
 					])
 
 					.then((answer) => {
-						console.log(answer, res, "answer");
+						// console.log(answer, res, "answer");
 						db.insertRole(answer, res).then((res) => {
 							console.log("\n");
 							console.log(chalk.green("New Title Successfully Added"));
@@ -304,13 +304,13 @@ function removeRole() {
 				},
 			])
 			.then((res) => {
-				console.log(res);
+				// console.log(res);
 				db.getRoleByDept(res).then((roles) => {
 					const roleChoices = roles.map((role) => ({
 						value: role.id,
 						name: role.title,
 					}));
-					console.log(roleChoices, "roleChoice");
+					// console.log(roleChoices, "roleChoice");
 					inquirer
 						.prompt([
 							{
@@ -321,7 +321,7 @@ function removeRole() {
 							},
 						])
 						.then((res) => {
-							console.log(res);
+							// console.log(res);
 							db.deleteRole(res).then(() => {
 								console.log("\n");
 								console.log(chalk.green("New Title Successfully Removed"));
@@ -336,7 +336,7 @@ function removeRole() {
 
 function updateRole() {
 	db.getRoleAndEmployees().then((results) => {
-		console.log(results, "results");
+		// console.log(results, "results");
 		inquirer
 			.prompt([
 				{
@@ -363,7 +363,7 @@ function updateRole() {
 				},
 			])
 			.then((res) => {
-				console.log(res, "reseresrerserse");
+				// console.log(res, "reseresrerserse");
 				db.updateRole(res).then(() => {
 					console.log("\n");
 					console.log(chalk.green("Role Successfully updated"));
@@ -397,7 +397,7 @@ function viewAllbyManager() {
 }
 function viewbyManager() {
 	db.getManagers().then((managers) => {
-		console.log(managers);
+		// console.log(managers);
 		const managerChoices = managers.map((manager) => ({
 			value: manager.manager_id,
 			name: manager.Manager,
@@ -412,7 +412,7 @@ function viewbyManager() {
 				},
 			])
 			.then((answer) => {
-				console.log(answer);
+				// console.log(answer);
 				//return { manager_id: 1 }
 
 				db.getEmployeessbyManager(answer).then((res) => {
@@ -553,7 +553,7 @@ function addEmployee() {
 				addRole();
 			} else {
 				db.getRoleAndEmployees().then((results) => {
-					console.log(results, "re1");
+					// console.log(results, "re1");
 					inquirer
 						.prompt([
 							{
@@ -601,7 +601,7 @@ function addEmployee() {
 						])
 
 						.then((answer) => {
-							console.log(answer, "resres");
+							// console.log(answer, "resres");
 							db.insertEmployee(answer).then((res) => {
 								console.log("\n");
 								console.log(chalk.green("New Enployee Successfully Added"));
@@ -615,7 +615,7 @@ function addEmployee() {
 }
 function removeEmployee() {
 	db.getEmployeesList().then((res) => {
-		console.log(res, "res");
+		// console.log(res, "res");
 		inquirer
 			.prompt([
 				{
